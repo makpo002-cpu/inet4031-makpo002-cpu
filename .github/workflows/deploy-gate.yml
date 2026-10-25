@@ -8,6 +8,13 @@ on:
       - "week-5/**"
       - "week-6/**"
       - ".github/workflows/deploy-gate.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "week-5/**"
+      - "week-6/**"
+      - ".github/workflows/deploy-gate.yml"
 
 permissions:
   contents: read
