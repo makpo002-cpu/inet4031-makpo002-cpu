@@ -30,7 +30,7 @@ resource "kubernetes_deployment_v1" "web" {
         }
         container {
           security_context {
-            allow_privilege_escalation = false
+            allow_privilege_escalation = true
             read_only_root_filesystem  = true
             run_as_non_root            = true
             capabilities {
