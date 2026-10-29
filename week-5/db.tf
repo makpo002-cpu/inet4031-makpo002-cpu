@@ -62,7 +62,16 @@ resource "kubernetes_deployment_v1" "db" {
         container {
           name  = "postgres"
           image = "postgres:16"
-
+          resources {
+            requests = {
+              cpu    = "100m"
+              memory = "128Mi"
+            }
+            limits = {
+              cpu    = "500m"
+              memory = "256Mi"
+            }
+          }
           port {
             container_port = 5432
           }

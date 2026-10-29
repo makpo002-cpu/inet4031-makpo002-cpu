@@ -20,7 +20,34 @@ resource "kubernetes_deployment_v1" "web" {
       }
 
       spec {
+        security_context {
+          run_as_non_root = true
+          run_as_user     = 10001
+          run_as_group    = 10001
+          seccomp_profile {
+            type = "RuntimeDefault"
+          }
+        }
         container {
+          security_context {
+            allow_privilege_escalation = false
+            read_only_root_filesystem  = true
+            run_as_non_root            = true
+            capabilities {
+              drop = ["ALL"]
+            }
+          }
+
+          resources {
+            requests = {
+              cpu    = "100m"
+              memory = "128Mi"
+            }
+            limits = {
+              cpu    = "500m"
+              memory = "256Mi"
+            }
+          }
           name  = "web"
           image = "week-4-web:latest"
 
