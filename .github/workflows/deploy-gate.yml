@@ -4,17 +4,9 @@ on:
   pull_request:
     branches:
       - main
-    paths:
-      - "week-5/**"
-      - "week-6/**"
-      - ".github/workflows/deploy-gate.yml"
   push:
     branches:
       - main
-    paths:
-      - "week-5/**"
-      - "week-6/**"
-      - ".github/workflows/deploy-gate.yml"
 
 permissions:
   contents: read
@@ -88,7 +80,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install Checkov
-        run: pip install checkov
+        run: pip install checkov==3.3.26
 
       - name: Scan Kubernetes Terraform resources
         run: |
