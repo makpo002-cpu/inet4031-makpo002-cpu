@@ -91,9 +91,46 @@ fi
 
 log "deploying ${NEW:0:7}"
 
-log "step 1 of 2: tofu apply in week-5"
-(cd week-5 && tofu init -input=false && tofu apply -auto-approve -input=false -lock-timeout=60s)
+log "step 1 of 2: tofu plan and safe apply in week-5"
+(
+  cd week-5
+  umask 077
+  PLAN_FILE="$(mktemp "${TMPDIR:-/tmp}/week8-deploy-plan.XXXXXX")"
+  KEEP_PLAN=false
 
+  cleanup_plan() {
+    if [ "$KEEP_PLAN" != true ]; then
+      rm -f "$PLAN_FILE"
+    fi
+  }
+  trap cleanup_plan EXIT
+
+  tofu init -input=false
+  tofu plan -input=false -lock-timeout=60s -out="$PLAN_FILE"
+
+  if ! tofu show -json "$PLAN_FILE" | python3 -c '
+import json, sys
+plan = json.load(sys.stdin)
+changes = plan.get("resource_changes", [])
+bad = [
+    r for r in changes
+    if "delete" in r.get("change", {}).get("actions", [])
+]
+for r in bad:
+    print("{}: {}".format(
+        r.get("address", "<unknown>"),
+        ", ".join(r.get("change", {}).get("actions", []))
+    ))
+sys.exit(1 if bad else 0)
+'; then
+    KEEP_PLAN=true
+    log "BLOCKED: plan contains destroy/replacement actions or could not be inspected."
+    log "Human review required. Private plan saved at: $PLAN_FILE"
+    exit 1
+  fi
+
+  tofu apply -input=false -lock-timeout=60s "$PLAN_FILE"
+)
 log "step 2 of 2: helm upgrade for prometheus"
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts --force-update
 helm repo update prometheus-community
