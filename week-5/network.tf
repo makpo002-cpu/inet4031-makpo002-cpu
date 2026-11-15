@@ -26,5 +26,19 @@ resource "kubernetes_network_policy_v1" "db_ingress" {
         port     = "5432"
       }
     }
+    ingress {
+      from {
+        pod_selector {
+          match_labels = {
+            app = "postgres-exporter"
+          }
+        }
+      }
+
+      ports {
+        protocol = "TCP"
+        port     = "5432"
+      }
+    }
   }
 }
