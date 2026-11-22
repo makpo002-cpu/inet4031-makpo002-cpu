@@ -62,6 +62,10 @@ resource "kubernetes_deployment_v1" "db" {
         container {
           name  = "postgres"
           image = "postgres:16"
+          args = [
+            "-c",
+            "shared_preload_libraries=pg_stat_statements"
+          ]
           resources {
             requests = {
               cpu    = "100m"
@@ -138,3 +142,113 @@ resource "kubernetes_service_v1" "db" {
     }
   }
 }
+
+resource "kubernetes_deployment_v1" "postgres_exporter" {
+  metadata {
+    name = "postgres-exporter"
+    labels = {
+      app = "postgres-exporter"
+    }
+  }
+
+  spec {
+    replicas = "1"
+
+    selector {
+      match_labels = {
+        app = "postgres-exporter"
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          app = "postgres-exporter"
+        }
+      }
+
+      spec {
+        container {
+          name  = "postgres-exporter"
+          image = "quay.io/prometheuscommunity/postgres-exporter:v0.17.1"
+
+          env {
+            name  = "DATA_SOURCE_URI"
+            value = "db:5432/incidents?sslmode=disable"
+          }
+
+          env {
+            name  = "DATA_SOURCE_USER_FILE"
+            value = "/run/secrets/POSTGRES_USER"
+          }
+
+          env {
+            name  = "DATA_SOURCE_PASS_FILE"
+            value = "/run/secrets/POSTGRES_PASSWORD"
+          }
+
+          port {
+            name           = "metrics"
+            container_port = 9187
+          }
+
+          resources {
+            requests = {
+              cpu    = "50m"
+              memory = "64Mi"
+            }
+            limits = {
+              cpu    = "200m"
+              memory = "128Mi"
+            }
+          }
+
+          volume_mount {
+            name       = "db-credentials"
+            mount_path = "/run/secrets"
+            read_only  = true
+          }
+        }
+
+        volume {
+          name = "db-credentials"
+
+          secret {
+            secret_name = "db-secret"
+          }
+        }
+      }
+    }
+  }
+}
+
+resource "kubernetes_service_v1" "postgres_exporter" {
+  metadata {
+    name = "postgres-exporter"
+
+    labels = {
+      app = "postgres-exporter"
+    }
+
+    annotations = {
+      "prometheus.io/scrape" = "true"
+      "prometheus.io/path"   = "/metrics"
+      "prometheus.io/port"   = "9187"
+    }
+  }
+
+  spec {
+    selector = {
+      app = "postgres-exporter"
+    }
+
+    port {
+      name        = "metrics"
+      port        = 9187
+      target_port = "metrics"
+    }
+
+    type = "ClusterIP"
+  }
+}
+

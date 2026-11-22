@@ -1,0 +1,19 @@
+ID,Category,Description,Status,Evidence
+IMG-01,Image Security,Trivy vulnerability scan performed on Flask application image,Pass,scans/before/20261122-125516/flask-image-before.json
+IMG-02,Image Security,At least one fixable HIGH vulnerability removed from the Flask image,Pass,scans/after/20261122-130454/flask-image-after.json
+IMG-03,Image Security,Remaining HIGH image findings reviewed and tracked as unresolved risk,Accepted Risk,scans/after/20261122-130454/flask-image-after.txt
+REPO-01,Repository Security,Gitleaks scanned full Git history with zero detected leaks,Pass,evidence/gitleaks-history-20261122-130649.json
+REPO-02,Repository Security,Terraform variable file excluded from Git tracking,Pass,.gitignore
+REPO-03,Repository Security,Terraform variable file restricted to owner permissions,Pass,week-5/terraform.tfvars
+STATE-01,Repository Security,Terraform state file restricted to owner permissions,Pass,week-5/terraform.tfstate
+K8S-01,Kubernetes Workload,Web container configured to run as non-root,Pass,evidence/app-deployments.yaml
+K8S-02,Kubernetes Workload,Web container configured to prevent privilege escalation and drop capabilities,Pass,evidence/app-deployments.yaml
+K8S-03,Kubernetes Workload,Web container configured with a read-only root filesystem,Pass,evidence/app-deployments.yaml
+K8S-04,Kubernetes Workload,Database and exporter hardening recommendations remain for review,Accepted Risk,evidence/kube-score-report.txt
+K8S-05,Kubernetes Workload,Web workload currently uses mutable latest image tag,Fail,evidence/kube-score-report.txt
+RBAC-01,RBAC,Eight kubectl authorization checks performed across application and monitoring identities,Pass,evidence/rbac-checks.txt
+RBAC-02,RBAC,Prometheus service account denied permission to read Kubernetes secrets,Pass,evidence/rbac-checks.txt
+NET-01,Network Security,Database ingress policy configured to allow web and exporter selectors on TCP 5432,Accepted Risk,evidence/network-policy-test-results.txt
+NET-02,Network Security,NetworkPolicy enforcement remains unverified because the local CNI did not demonstrate policy behavior,Accepted Risk,evidence/network-policy-test-results.txt
+PROC-01,Security Process,Trivy Kubernetes manifest scan reports zero HIGH or CRITICAL misconfigurations,Pass,scans/after/20261122-131856/kubernetes-trivy.txt
+PROC-02,Security Process,Automated timestamped all-in-one security scanning script completed and tested,Pass,evidence/run-20261122-133941

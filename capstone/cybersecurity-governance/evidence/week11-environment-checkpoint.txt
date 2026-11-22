@@ -1,0 +1,29 @@
+WEEK 11 ENVIRONMENT CHECKPOINT
+Sun Nov 22 13:52:24 CST 2026
+
+KUBERNETES NODES
+NAME                    STATUS   ROLES           AGE   VERSION
+desktop-control-plane   Ready    control-plane   45d   v1.36.1
+
+APPLICATION PODS
+NAME                                 READY   STATUS    RESTARTS      AGE
+db-7dc7ffd8fb-pv2td                  1/1     Running   1 (81m ago)   7d
+postgres-exporter-64b555fc68-4rpsw   1/1     Running   1 (81m ago)   7d
+web-6844ffdddb-72jq5                 1/1     Running   0             62m
+
+MONITORING PODS
+NAME                                             READY   STATUS    RESTARTS        AGE
+prometheus-kube-state-metrics-86f6b846bf-q55gv   1/1     Running   164 (80m ago)   28d
+prometheus-prometheus-node-exporter-rn2jq        1/1     Running   56 (81m ago)    34d
+prometheus-server-6944b769c9-98gpk               2/2     Running   27 (81m ago)    28d
+
+SERVICES
+NAME                TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+db                  ClusterIP   10.96.124.152   <none>        5432/TCP   45d
+kubernetes          ClusterIP   10.96.0.1       <none>        443/TCP    45d
+postgres-exporter   ClusterIP   10.96.94.7      <none>        9187/TCP   15d
+web                 ClusterIP   10.96.167.151   <none>        5000/TCP   45d
+
+NETWORK POLICIES
+NAME                  POD-SELECTOR   AGE
+db-ingress-from-web   app=db         24d
