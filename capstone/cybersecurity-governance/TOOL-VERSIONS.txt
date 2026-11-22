@@ -1,0 +1,33 @@
+INET4031 CYBERSECURITY GOVERNANCE CAPSTONE
+TOOL VERSIONS
+Assessment date: November 22, 2026
+
+Operating environment:
+macOS Intel (darwin_amd64)
+Docker Desktop Kubernetes
+Kubernetes context: docker-desktop
+Local CNI: kindnet
+
+Security scanning:
+Trivy: 0.76.2
+Gitleaks: 8.30.1
+kube-score: 1.20.0
+
+Infrastructure and container tools:
+OpenTofu: 1.13.1
+Docker: 29.7.2
+Helm: 4.3.1
+
+Kubernetes:
+kubectl client: 1.36.1
+Kustomize: 5.8.1
+
+Development tools:
+Python: 3.9.6
+Git: 2.39.5 (Apple Git-154)
+
+Notes:
+The Trivy vulnerability database was updated November 22, 2026.
+NetworkPolicy enforcement was not verified with the local kindnet CNI.
+The local environment differs from the Ubuntu/k3s rebuild environment
+specified in the original lab instructions.
